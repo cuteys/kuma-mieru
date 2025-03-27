@@ -1,47 +1,70 @@
-FROM oven/bun:1.2-alpine as builder
+FROM oven/bun:1.2-alpine AS builder
 WORKDIR /app
 
+ARG NODE_ENV=production
+ARG NEXT_TELEMETRY_DISABLED=1
+ARG UPTIME_KUMA_BASE_URL
+ARG PAGE_ID
+ARG CI_MODE=false
+
+ENV NODE_ENV=${NODE_ENV} \
+  NEXT_TELEMETRY_DISABLED=${NEXT_TELEMETRY_DISABLED} \
+  UPTIME_KUMA_BASE_URL=${UPTIME_KUMA_BASE_URL} \
+  PAGE_ID=${PAGE_ID} \
+  CI_MODE=${CI_MODE}
+
+RUN apk add --no-cache curl
+
+RUN if [ -z "$UPTIME_KUMA_BASE_URL" ]; then \
+  echo "Error: UPTIME_KUMA_BASE_URL is required" && exit 1; \
+  fi
+
+RUN if [ -z "$PAGE_ID" ]; then \
+  echo "Error: PAGE_ID is required" && exit 1; \
+  fi
+
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+RUN set -e && \
+  echo "Installing dependencies..." && \
+  bun install --frozen-lockfile || { echo "Failed to install dependencies"; exit 1; }
 
-COPY postcss.config.js .
-COPY tailwind.config.js .
-COPY tsconfig.json .
-COPY biome.jsonc .
-COPY next.config.js .
+RUN if [ "$CI_MODE" = "true" ]; then \
+  echo "CI_MODE is enabled, build will be skipped" && exit 0; \
+  fi
 
-COPY app ./app
-COPY components ./components
-COPY config ./config
-COPY public ./public
-COPY scripts ./scripts
-COPY services ./services
-COPY types ./types
-COPY utils ./utils
-COPY styles ./styles
+COPY . .
 
-RUN bun run build
+RUN set -e && \
+  echo "Starting build process..." && \
+  bun run build || { echo "Build failed"; exit 1; }
 
-# Production stage
+# Runtime image
 FROM oven/bun:1.2-alpine
 WORKDIR /app
 
-ENV NODE_ENV=production \
-  NEXT_TELEMETRY_DISABLED=1 \
-  PORT=3000 \
-  HOSTNAME="0.0.0.0"
+ARG PORT=3000
+ARG HOSTNAME="0.0.0.0"
+ARG NODE_ENV=production
+ARG NEXT_TELEMETRY_DISABLED=1
+ARG UPTIME_KUMA_BASE_URL
+ARG PAGE_ID
 
-COPY --from=builder /app/.next/standalone ./
+ENV PORT=${PORT} \
+  HOSTNAME=${HOSTNAME} \
+  NODE_ENV=${NODE_ENV} \
+  NEXT_TELEMETRY_DISABLED=${NEXT_TELEMETRY_DISABLED} \
+  UPTIME_KUMA_BASE_URL=${UPTIME_KUMA_BASE_URL} \
+  PAGE_ID=${PAGE_ID}
+
+RUN apk add --no-cache curl
+
+COPY --from=builder /app/.next/standalone/ ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/static ./.next/static
 
-RUN mkdir -p ./.next/cache
-
-EXPOSE 3000
+EXPOSE ${PORT}
 
 HEALTHCHECK --interval=30s --timeout=3s \
-  CMD curl -f http://localhost:3000/api/health || exit 1
+  CMD curl -f http://localhost:${PORT}/api/health || exit 1
 
-USER nobody
-
-CMD ["bun", "server.js"]
+CMD ["bun", "./server.js"]

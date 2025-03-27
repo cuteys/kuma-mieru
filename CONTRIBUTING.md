@@ -20,12 +20,13 @@ Please be respectful and considerate of others when contributing to this project
    ```
 4. Install dependencies:
    ```bash
-   npm install
+   bun install
    ```
 
 ## Development Workflow
 
 1. Create a new branch for your feature or bugfix:
+
    ```bash
    git checkout -b feature/amazing-feature
    # or
@@ -35,22 +36,26 @@ Please be respectful and considerate of others when contributing to this project
 2. Make your changes
 
 3. Run the development server to test your changes:
+
    ```bash
-   npm run dev
+   bun run dev
    ```
 
 4. Make sure your code follows the project's coding standards:
+
    ```bash
-   npm run lint
-   npm run format
+   bun run lint
+   bun run format
    ```
 
 5. Commit your changes with a descriptive commit message:
+
    ```bash
    git commit -m 'feat(component): add some amazing feature'
    ```
-   
+
    Follow the conventional commit format:
+
    - `feat`: A new feature
    - `fix`: A bug fix
    - `docs`: Documentation changes
@@ -61,6 +66,7 @@ Please be respectful and considerate of others when contributing to this project
    - `chore`: Changes to the build process or auxiliary tools
 
 6. Push to your fork:
+
    ```bash
    git push origin feature/amazing-feature
    ```
@@ -119,8 +125,19 @@ Please be respectful and considerate of others when contributing to this project
 - Update the README.md and README.zh.md if your changes affect the project's functionality
 - Document your components with descriptive comments
 
+## I18n
+
+### Update the i18n translations
+
+- Update the messages in the `./messages/` folder
+
+### Add your language to the i18n
+
+- Add your language to the locales array in the `./utils/i18n/config.ts` file
+- Add your language to the languages json file in the `./messages/` folder, example: `./messages/en-US.json`
+
 ## Questions?
 
 If you have any questions or need help with your contribution, feel free to open an issue asking for guidance.
 
-Thank you for contributing to Kuma Mieru! 
+Thank you for contributing to Kuma Mieru!

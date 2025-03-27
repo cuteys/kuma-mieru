@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import Script from "next/script";
+import Script from 'next/script';
 
 interface AnalyticsProps {
   id: string;
@@ -12,12 +12,12 @@ export default function Analytics({ id }: AnalyticsProps) {
   return (
     <>
       <Script
-        strategy='afterInteractive'
+        strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${id}`}
       />
       <Script
-        id='google-analytics'
-        strategy='afterInteractive'
+        id="google-analytics"
+        strategy="afterInteractive"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
         dangerouslySetInnerHTML={{
           __html: `

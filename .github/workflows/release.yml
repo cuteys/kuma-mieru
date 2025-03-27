@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "package.json"
+      - ".github/workflows/release.yml"
     branches:
       - main
 
@@ -19,6 +20,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Set environment variables
+        id: env_vars
+        run: |
+          echo "repo_name=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
+          echo "commit_url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit" >> $GITHUB_OUTPUT
+          echo "profile_url=${GITHUB_SERVER_URL}" >> $GITHUB_OUTPUT
 
       - name: Get version from package.json
         id: package_version
@@ -38,35 +46,95 @@ jobs:
       - name: Generate changelog
         if: steps.version_check.outputs.changed == 'true'
         id: changelog
+        env:
+          COMMIT_URL: ${{ steps.env_vars.outputs.commit_url }}
+          PROFILE_URL: ${{ steps.env_vars.outputs.profile_url }}
         run: |
-          # 获取从上一个版本到现在的所有提交
-          CHANGELOG=$(git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)..HEAD)
+          CHANGELOG=""
+          AUTHORS=""
+
+          # Function to add emoji based on commit message
+          add_emoji() {
+            local msg="$1"
+            local hash="$2"
+            case "$msg" in
+              *feat*|*特性*) echo "- ✨ [\`$msg\`]($COMMIT_URL/$hash)" ;;
+              *fix*|*修复*) echo "- 🐛 [\`$msg\`]($COMMIT_URL/$hash)" ;;
+              *docs*|*文档*) echo "- 📚 [\`$msg\`]($COMMIT_URL/$hash)" ;;
+              *style*|*样式*) echo "- 💎 [\`$msg\`]($COMMIT_URL/$hash)" ;;
+              *refactor*|*重构*) echo "- ♻️ [\`$msg\`]($COMMIT_URL/$hash)" ;;
+              *perf*|*性能*) echo "- ⚡️ [\`$msg\`]($COMMIT_URL/$hash)" ;;
+              *test*|*测试*) echo "- ✅ [\`$msg\`]($COMMIT_URL/$hash)" ;;
+              *chore*|*构建*) echo "- 🔧 [\`$msg\`]($COMMIT_URL/$hash)" ;;
+              *) echo "- 🔨 [\`$msg\`]($COMMIT_URL/$hash)" ;;
+            esac
+          }
+
+          # Get all commits and authors since last tag
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)
+          while IFS= read -r line; do
+            HASH=$(echo "$line" | cut -f1)
+            MSG=$(echo "$line" | cut -f2)
+            CHANGELOG="$CHANGELOG$(add_emoji "$MSG" "$HASH")\n"
+          done < <(git log --pretty=format:"%H%x09%s" $LAST_TAG..HEAD)
+
+          # Get unique authors
+          AUTHORS="\n\n## 👥 贡献者\n\n"
+          while IFS= read -r author; do
+            AUTHORS="$AUTHORS- [@$author]($PROFILE_URL/$author)\n"
+          done < <(git log $LAST_TAG..HEAD --format="%aN" | sort -u)
+
           echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo -e "$CHANGELOG$AUTHORS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create Release
         if: steps.version_check.outputs.changed == 'true'
         uses: softprops/action-gh-release@v1
+        env:
+          VERSION: ${{ steps.package_version.outputs.version }}
+          REPO_NAME: ${{ steps.env_vars.outputs.repo_name }}
         with:
-          tag_name: v${{ steps.package_version.outputs.version }}
-          name: Release v${{ steps.package_version.outputs.version }}
+          tag_name: v${{ env.VERSION }}
+          name: 🚀 Release v${{ env.VERSION }}
           body: |
-            ## 更新日志
+            ## 📝 更新日志
 
             ${{ steps.changelog.outputs.CHANGELOG }}
 
-            ## Docker 镜像
+            ## 🔄 更新指南
 
+            ### Docker
+            
             ```bash
-            docker pull ghcr.io/${{ github.repository }}:${{ steps.package_version.outputs.version }}
+            # 拉取最新代码
+            git pull
+
+            # 停止并删除容器
+            docker stop kuma-mieru
+            docker rm kuma-mieru
+
+            # 重新构建镜像
+            docker build --no-cache --t kuma-mieru .
+
+            # 启动容器
+            docker run -d \
+              --name kuma-mieru \
+              -p 3883:3000 \
+              -e UPTIME_KUMA_BASE_URL=your_uptime_kuma_url \
+              -e PAGE_ID=your_page_id \
+              kuma-mieru
             ```
 
-            ## 环境变量
+            ### Docker Compose
 
-            请确保设置以下环境变量：
-            - `UPTIME_KUMA_BASE_URL`: Uptime Kuma 实例的基础 URL
-            - `PAGE_ID`: 状态页面 ID
+            ```bash
+            # 拉取最新代码
+            git pull
+
+            # 重新构建镜像并启动容器
+            docker-compose up -d --build
+            ```
           draft: false
           prerelease: false
-          generate_release_notes: true 
+          generate_release_notes: true

@@ -1,8 +1,15 @@
 'use client';
 
-import { useEffect, useState, useCallback, type ReactNode } from 'react';
-import { RefreshCw, Play, Pause } from 'lucide-react';
+import { cn } from '@heroui/react';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import { Pause, Play, RefreshCw } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
+import { type ReactNode, useCallback, useEffect, useState } from 'react';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface AutoRefreshProps {
   onRefresh: () => Promise<void>;
@@ -21,11 +28,13 @@ interface ControlButtonProps {
   onClick: () => void;
 }
 
+// unused
 function formatTime(ms: number): string {
   return dayjs(ms).format('YYYY-MM-DD HH:mm:ss (Z)');
 }
 
 function RefreshButton({ isRefreshing, onClick, children }: RefreshButtonProps) {
+  const t = useTranslations();
   return (
     <button
       type="button"
@@ -41,12 +50,13 @@ function RefreshButton({ isRefreshing, onClick, children }: RefreshButtonProps) 
       <RefreshCw
         className={`h-4 w-4 transition-transform ${isRefreshing ? 'animate-spin' : 'group-hover:rotate-180'}`}
       />
-      {isRefreshing ? '刷新中...' : children}
+      {isRefreshing ? t('timerRefreshing') : children}
     </button>
   );
 }
 
 function ControlButton({ isPaused, onClick }: ControlButtonProps) {
+  const t = useTranslations();
   return (
     <button
       type="button"
@@ -61,12 +71,15 @@ function ControlButton({ isPaused, onClick }: ControlButtonProps) {
       ) : (
         <Pause className="h-4 w-4 transition-transform hover:scale-110" />
       )}
-      {isPaused ? '已暂停' : '暂停'}
+      {isPaused ? t('timerPaused') : t('timerPause')}
     </button>
   );
 }
 
 export default function AutoRefresh({ onRefresh, interval = 60000, children }: AutoRefreshProps) {
+  const t = useTranslations();
+  const format = useFormatter();
+
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(interval);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -81,15 +94,15 @@ export default function AutoRefresh({ onRefresh, interval = 60000, children }: A
 
     try {
       await onRefresh();
-      setLastRefreshTime(Date.now());
+      setLastRefreshTime(dayjs().valueOf());
     } catch (error) {
-      console.error('刷新失败:', error);
+      console.error(t('errorRefresh'), ':', error);
     } finally {
       setIsRefreshing(false);
       setTimeLeft(interval);
       setTimeout(() => setShowRefreshAnimation(false), 500);
     }
-  }, [isRefreshing, onRefresh, interval]);
+  }, [isRefreshing, onRefresh, interval, t]);
 
   useEffect(() => {
     if (isPaused) return;
@@ -111,7 +124,13 @@ export default function AutoRefresh({ onRefresh, interval = 60000, children }: A
 
   return (
     <>
-      <div className="sticky top-0 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-4 space-y-2 z-40 backdrop-blur-sm transition-colors duration-300 rounded-xl">
+      <div
+        className={cn(
+          'sticky top-0 left-0 right-0',
+          'bg-background rounded-b-large',
+          'p-4 space-y-2 z-40',
+        )}
+      >
         <div className="flex items-center gap-4 max-w-7xl mx-auto">
           <div className="flex-1">
             <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden transition-colors duration-300">
@@ -130,19 +149,33 @@ export default function AutoRefresh({ onRefresh, interval = 60000, children }: A
           <div className="flex items-center gap-2">
             <ControlButton isPaused={isPaused} onClick={() => setIsPaused(!isPaused)} />
             <RefreshButton isRefreshing={isRefreshing} onClick={handleRefresh}>
-              立即刷新
+              {t('timerRefreshNow')}
             </RefreshButton>
           </div>
         </div>
 
         <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 max-w-7xl mx-auto transition-colors duration-300">
-          <div suppressHydrationWarning>上次刷新: {formatTime(lastRefreshTime)}</div>
+          <div suppressHydrationWarning>
+            {t('timerLastTime', {
+              time: format.dateTime(dayjs(lastRefreshTime).toDate(), {
+                timeZone: dayjs.tz.guess(),
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+              }),
+            })}
+          </div>
           {!isPaused && (
             <div
               suppressHydrationWarning
               className={`transition-opacity duration-300 ${isPaused ? 'opacity-0' : 'opacity-100'}`}
             >
-              {Math.ceil(timeLeft / 1000)} 秒后刷新
+              {t('timerNextTime', {
+                sec: Math.ceil(timeLeft / 1000),
+              })}
             </div>
           )}
         </div>

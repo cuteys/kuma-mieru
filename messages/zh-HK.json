@@ -1,0 +1,45 @@
+{
+  "pageMain": "主頁",
+  "pageEdit": "編輯此頁",
+  "pageBack": "返回上一頁",
+  "pageBackMonitor": "返回監控列表",
+
+  "timerPause": "暫停",
+  "timerPaused": "已暫停",
+  "timerRefreshing": "刷新中...",
+  "timerRefreshNow": "立即刷新",
+  "timerLastTime": "上次刷新: {time}",
+  "timerNextTime": "將於 {sec} 秒後刷新",
+
+  "nodeSearch": "搜尋節點... (待完成)",
+  "nodeUptimeStatus": "可用率 (24 小時)",
+
+  "nodeLatestPing": "最新延遲",
+  "nodeAvgPing": "平均延遲",
+  "nodeTrimmedAvgPing": "修尾平均延遲",
+
+  "nodeOnline": "在線",
+  "nodeOffline": "離線",
+  "nodeMaintenance": "維護中",
+
+  "nodeCount": "最近 {count} 次",
+
+  "alertCreatedAt": "發佈於 {time}",
+  "alertUpdatedAt": "更新於 {time}",
+
+  "errorRefresh": "刷新失敗",
+  "errorMonitorNotFound": "未找到監控",
+  "errorRequestData": "取得數據失敗",
+
+  "ariaMainNav": "主導航欄",
+  "ariaToolbar": "工具列",
+  "ariaMobileToolbar": "流動版工具列",
+  "ariaMobileNav": "流動版主導航欄",
+  "ariaSearch": "搜尋",
+
+  "modeLight": "淺色模式",
+  "modeDark": "深色模式",
+  "modeSystem": "跟隨系統",
+
+  "": ""
+}

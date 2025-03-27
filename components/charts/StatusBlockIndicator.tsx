@@ -1,11 +1,12 @@
-import React, { useMemo } from 'react';
 import type { Heartbeat } from '@/types/monitor';
 import { clsx } from 'clsx';
-import { CustomTooltip } from '../ui/CustomTooltip';
 import dayjs from 'dayjs';
-import { PingStats } from './PingStats';
+import { useTranslations } from 'next-intl';
+import React, { useMemo } from 'react';
+import { CustomTooltip } from '../ui/CustomTooltip';
 import { calculatePingStats, getStatusColor } from '../utils/charts';
 import { COLOR_SYSTEM } from '../utils/colors';
+import { PingStats } from './PingStats';
 
 interface StatusBlockIndicatorProps {
   heartbeats: Heartbeat[];
@@ -18,6 +19,7 @@ export function StatusBlockIndicator({
   className,
   isHome = true,
 }: StatusBlockIndicatorProps) {
+  const t = useTranslations();
   // 获取最近的 50 个心跳数据点
   const recentHeartbeats = heartbeats.slice(-50);
 
@@ -31,23 +33,23 @@ export function StatusBlockIndicator({
         <PingStats heartbeats={recentHeartbeats} isHome={isHome} />
         <div
           className={clsx(
-            'flex items-center gap-3 text-tiny text-foreground/80 dark:text-foreground/60',
+            'flex items-center gap-2 text-xs text-foreground/80 dark:text-foreground/60',
             isHome && 'ml-auto',
           )}
         >
           {Object.entries(COLOR_SYSTEM)
             .filter(([_, value]) => value.showInLegend)
             .map(([key, value]) => (
-              <div key={key} className="flex items-center gap-1">
+              <div key={key} className="flex items-center gap-1 text-xs">
                 <div className={clsx('w-1.5 h-1.5 rounded-full', value.bg.dark)} />
-                <span>{value.label}</span>
+                <span>{t(value.label)}</span>
               </div>
             ))}
         </div>
       </div>
 
       {/* 状态块 */}
-      <div className="flex gap-0.5 mt-2 h-3 w-[98%] justify-center items-center mx-auto rounded-sm overflow-hidden bg-default-100 dark:bg-default-50">
+      <div className="flex gap-0.5 mt-2 h-3 w-[98%] justify-center items-center mx-auto rounded-sm overflow-hidden">
         {heartbeats.map((hb) => {
           const colorInfo = getStatusColor(hb, pingStats);
           return (
@@ -58,7 +60,7 @@ export function StatusBlockIndicator({
                   <div className="flex w-full flex-col gap-y-1">
                     <div className="flex w-full items-center gap-x-1 text-small">
                       <span className={clsx('text-small font-medium', colorInfo.text)}>
-                        {colorInfo.label}
+                        {t(colorInfo.label)}
                       </span>
                       <span className="text-foreground/60 dark:text-foreground/40">-</span>
                       <span className="text-foreground/60 dark:text-foreground/40">

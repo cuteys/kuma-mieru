@@ -1,0 +1,44 @@
+{
+  "pageMain": "Home",
+  "pageEdit": "Edit this page",
+  "pageBack": "Go back",
+  "pageBackMonitor": "Back to monitor list",
+
+  "timerPause": "Pause",
+  "timerPaused": "Paused",
+  "timerRefreshing": "Refreshing...",
+  "timerRefreshNow": "Refresh now",
+  "timerLastTime": "Last refresh: {time}",
+  "timerNextTime": "Refresh in {sec} seconds",
+
+  "nodeSearch": "Search (TODO)",
+  "nodeUptimeStatus": "Uptime Status (Daily)",
+
+  "nodeLatestPing": "Latest Ping",
+  "nodeAvgPing": "Average Ping",
+  "nodeTrimmedAvgPing": "Trimmed Average",
+
+  "nodeOnline": "Online",
+  "nodeOffline": "Offline",
+  "nodeMaintenance": "Maint.",
+  "nodeCount": "Last {count} times",
+
+  "alertCreatedAt": "Published at {time}",
+  "alertUpdatedAt": "Updated at {time}",
+
+  "errorRefresh": "Refresh failed",
+  "errorMonitorNotFound": "Monitor not found",
+  "errorRequestData": "Failed to fetch data",
+
+  "ariaMainNav": "Main navigation",
+  "ariaToolbar": "Toolbar",
+  "ariaMobileToolbar": "Mobile toolbar",
+  "ariaMobileNav": "Mobile navigation",
+  "ariaSearch": "Search",
+
+  "modeLight": "Light",
+  "modeDark": "Dark",
+  "modeSystem": "System",
+
+  "": ""
+}

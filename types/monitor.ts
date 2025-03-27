@@ -1,12 +1,12 @@
 export interface Heartbeat {
-  status: number;  // 0: down, 1: up, 2: maintenance
+  status: number; // 0: down, 1: up, 2: maintenance
   time: string;
   msg: string;
   ping: number | null; // latency in ms
 }
 
 export interface UptimeData {
-  [key: string]: number;  // Format: "{monitorId}_{hours}" -> uptime percentage
+  [key: string]: number; // Format: "{monitorId}_{hours}" -> uptime percentage
 }
 
 export interface MonitorTag {
@@ -35,7 +35,7 @@ export interface MonitorGroup {
 }
 
 export interface HeartbeatData {
-  [key: string]: Heartbeat[];  // key is monitor ID
+  [key: string]: Heartbeat[]; // key is monitor ID
 }
 
 export interface MonitoringData {
@@ -48,7 +48,10 @@ export interface MonitoringData {
  */
 export interface Incident {
   id: number;
-  style: 'warning' | 'danger' | 'success' | 'info';
+  style: 'info' | 'warning' | 'danger' | 'primary' | 'light' | 'dark';
+  // info -> primary
+  // light -> default
+  // dark -> secondary
   title: string;
   content: string;
   pin: number;

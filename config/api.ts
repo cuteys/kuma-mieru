@@ -1,27 +1,36 @@
 import type { Config } from '@/types/config';
+import { env } from './env';
 
-const getConfig = (): Config => {
-  const baseUrl = process.env.UPTIME_KUMA_BASE_URL || 'https://uptime.example.com';
-  const pageId = process.env.PAGE_ID || 'demo';
+export const getConfig = (): Config => {
+  const { baseUrl, pageId, siteMeta, isEditThisPage, isShowStarButton } = env.config;
+  const { NODE_ENV } = env.runtime;
 
-  return {
+  if (!baseUrl || !pageId) {
+    throw new Error('Missing required configuration variables');
+  }
+
+  const config = {
     baseUrl,
+    pageId,
     htmlEndpoint: `${baseUrl}/status/${pageId}`,
     apiEndpoint: `${baseUrl}/api/status-page/heartbeat/${pageId}`,
-    isPlaceholder: !process.env.UPTIME_KUMA_BASE_URL,
+    siteMeta,
+    isPlaceholder: false,
+    isEditThisPage,
+    isShowStarButton,
   };
+
+  if (NODE_ENV === 'development') {
+    console.log('config', config);
+  }
+
+  return config;
 };
 
 export const apiConfig = getConfig();
 
 export type ApiConfig = Config;
 
-export const isUsingPlaceholder = () => {
-  return apiConfig.isPlaceholder === true;
-};
-
 export const validateConfig = () => {
-  if (isUsingPlaceholder()) {
-    throw new Error('Please configure UPTIME_KUMA_BASE_URL and PAGE_ID environment variables');
-  }
-}; 
+  return true;
+};

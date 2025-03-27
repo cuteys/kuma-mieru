@@ -1,0 +1,45 @@
+{
+  "pageMain": "トップページ",
+  "pageEdit": "このページを編集",
+  "pageBack": "前のページに戻る",
+  "pageBackMonitor": "監視リストに戻る",
+
+  "timerPause": "一時停止",
+  "timerPaused": "一時停止中",
+  "timerRefreshing": "更新中...",
+  "timerRefreshNow": "今すぐ更新",
+  "timerLastTime": "最終更新: {time}",
+  "timerNextTime": "更新まで {sec} 秒",
+
+  "nodeSearch": "ノードを検索...（未実装）",
+  "nodeUptimeStatus": "稼働率（24時間）",
+
+  "nodeLatestPing": "最新レイテンシ",
+  "nodeAvgPing": "平均レイテンシ",
+  "nodeTrimmedAvgPing": "調整後平均レイテンシ",
+
+  "nodeOnline": "稼働中",
+  "nodeOffline": "停止中",
+  "nodeMaintenance": "保守中",
+
+  "nodeCount": "直近 {count} 回分",
+
+  "alertCreatedAt": "作成日時: {time}",
+  "alertUpdatedAt": "更新日時: {time}",
+
+  "errorRefresh": "更新失敗",
+  "errorMonitorNotFound": "監視項目が見つかりません",
+  "errorRequestData": "データ取得に失敗しました",
+
+  "ariaMainNav": "メインナビゲーション",
+  "ariaToolbar": "ツールバー",
+  "ariaMobileToolbar": "モバイルツールバー",
+  "ariaMobileNav": "モバイルメインナビゲーション",
+  "ariaSearch": "検索",
+
+  "modeLight": "ライト",
+  "modeDark": "ダーク",
+  "modeSystem": "システム",
+
+  "": ""
+}

@@ -1,12 +1,13 @@
 'use client';
-import { Card, CardBody, CardHeader, Badge, Progress, Chip, Divider } from '@heroui/react';
-import type { Monitor, Heartbeat } from '@/types/monitor';
-import { MonitoringChart } from './charts/MonitoringChart';
-import { CheckCircle2, AlertCircle, MinusCircle } from 'lucide-react';
-import { StatusBlockIndicator } from './charts/StatusBlockIndicator';
-import { ResponsiveContainer, RadialBarChart, RadialBar, Cell, PolarAngleAxis } from 'recharts';
-import { useRouter } from 'next/navigation';
+import type { Heartbeat, Monitor } from '@/types/monitor';
+import { Card, CardBody, CardHeader, Chip, Divider } from '@heroui/react';
+import clsx from 'clsx';
 import { motion } from 'framer-motion';
+import { AlertCircle, CheckCircle2, MinusCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { MonitoringChart } from './charts/MonitoringChart';
+import { ResponsStats } from './charts/ResponsStats';
+import { StatusBlockIndicator } from './charts/StatusBlockIndicator';
 
 interface MonitorCardProps {
   monitor: Monitor;
@@ -23,7 +24,6 @@ export function MonitorCard({ monitor, heartbeats, uptime24h, isHome = true }: M
   const chartColor = status === 1 ? 'success' : status === 2 ? 'warning' : 'danger';
 
   const StatusIcon = status === 1 ? CheckCircle2 : status === 2 ? MinusCircle : AlertCircle;
-  const statusText = status === 1 ? '在线' : status === 2 ? '维护中' : '离线';
 
   const uptimeData = [
     {
@@ -45,17 +45,20 @@ export function MonitorCard({ monitor, heartbeats, uptime24h, isHome = true }: M
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className={isHome ? "cursor-pointer transition-transform hover:scale-[1.02]" : ""}
+      className="group"
       onClick={handleClick}
     >
-      <Card className="w-full">
+      <Card
+        className={clsx(
+          isHome ? 'w-full' : 'w-full md:w-2/3 mx-auto',
+          isHome && 'cursor-pointer hover:shadow-lg transition-shadow',
+        )}
+      >
         <CardHeader className="flex justify-between items-center">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 w-[50%]">
             <div className="flex items-center gap-2">
-              <Badge color={chartColor} variant="flat" title={statusText}>
-                <StatusIcon size={18} className={`text-${chartColor} h-4 w-4`} />
-              </Badge>
-              <h3 className="text-lg font-semibold">{monitor.name}</h3>
+              <StatusIcon className={`text-${chartColor} h-5 w-5 ml-1`} />
+              <h3 className="text-lg font-semibold truncate">{monitor.name}</h3>
             </div>
             {monitor.tags && monitor.tags.length > 0 && (
               <div className="flex flex-wrap gap-1">
@@ -76,22 +79,8 @@ export function MonitorCard({ monitor, heartbeats, uptime24h, isHome = true }: M
               </div>
             )}
           </div>
-          <div className="inline-flex items-center">
-            <div className="w-10 h-10">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadialBarChart
-                  innerRadius="65%"
-                  outerRadius="100%"
-                  data={uptimeData}
-                  startAngle={90}
-                  endAngle={-270}
-                >
-                  <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
-                  <RadialBar background dataKey="value" cornerRadius={30} fill="#17c964" />
-                </RadialBarChart>
-              </ResponsiveContainer>
-            </div>
-            <span className="text-sm text-gray-500">{uptimeData[0].value.toFixed(2)}%</span>
+          <div className={clsx('mr-4', isHome ? 'mr-0' : 'mr-4')}>
+            <ResponsStats value={uptimeData[0].value} fill={uptimeData[0].fill} isHome={isHome} />
           </div>
         </CardHeader>
         <CardBody>

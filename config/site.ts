@@ -1,57 +1,50 @@
-import { getGlobalConfig } from "@/services/config";
-import { apiConfig } from "@/config/api";
+'use client';
 
-const { config } = await getGlobalConfig();
+import { env } from './env';
 
-export type SiteConfig = typeof siteConfig;
-
-const DEFAULT_CONFIG = {
-  title: "Kuma Mieru",
-  description: "A beautiful and modern uptime monitoring dashboard",
-  icon: null, // 交给 navbar 组件处理
+const baseConfig = {
+  name: 'Kuma Mieru',
+  description: 'A beautiful and modern uptime monitoring dashboard',
+  icon: '/favicon.svg',
 } as const;
 
-const constructIconUrl = (iconPath: string | null | undefined): string | null => {
-  if (!iconPath) return null;
-
-  if (iconPath.startsWith('http://') || iconPath.startsWith('https://')) {
-    return iconPath;
-  }
-
-  const cleanPath = iconPath.startsWith('/') ? iconPath.slice(1) : iconPath;
-  return `${apiConfig.baseUrl}/${cleanPath}`;
+type NavItem = {
+  label: string;
+  href: string;
+  external: boolean;
 };
 
+const navItems: NavItem[] = [
+  {
+    label: 'pageMain',
+    href: '/',
+    external: false,
+  },
+  {
+    label: 'pageEdit',
+    href: `${env.config.baseUrl}/manage-status-page`,
+    external: true,
+  },
+];
+
 export const siteConfig = {
-  name: config?.title || DEFAULT_CONFIG.title,
-  description: config?.description || DEFAULT_CONFIG.description,
-  icon: constructIconUrl(config?.icon) || constructIconUrl(DEFAULT_CONFIG.icon),
-  navItems: [
-    {
-      label: '首页',
-      href: "/",
-      external: false,
-    },
-    {
-      label: '编辑此页',
-      href: `${apiConfig.baseUrl}/manage-status-page`,
-      external: true,
-    }
-  ],
-  navMenuItems: [
-    {
-      label: '首页',
-      href: "/",
-      external: false,
-    },
-    {
-      label: '编辑此页',
-      href: `${apiConfig.baseUrl}/manage-status-page`,
-      external: true,
-    }
-  ],
+  name: env.config.siteMeta.title || baseConfig.name,
+  description: env.config.siteMeta.description || baseConfig.description,
+  icon: env.config.siteMeta.icon
+    ? env.config.siteMeta.icon.startsWith('http')
+      ? env.config.siteMeta.icon
+      : `${env.config.baseUrl}/${env.config.siteMeta.icon.replace(/^\//, '')}`
+    : baseConfig.icon,
+  navItems: navItems.filter((item): item is NavItem =>
+    item.label !== 'pageEdit' ? true : env.config.isEditThisPage,
+  ),
+  navMenuItems: navItems.filter((item): item is NavItem =>
+    item.label !== 'pageEdit' ? true : env.config.isEditThisPage,
+  ),
   links: {
-    github: "https://github.com/Alice39s/kuma-mieru",
-    docs: "https://github.com/Alice39s/kuma-mieru/blob/main/README.md"
-  }
+    github: 'https://github.com/Alice39s/kuma-mieru',
+    docs: 'https://github.com/Alice39s/kuma-mieru/blob/main/README.md',
+  },
 } as const;
+
+export type SiteConfig = typeof siteConfig;

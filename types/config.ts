@@ -1,10 +1,9 @@
-import type { Incident, MonitorGroup } from "./monitor";
+import type { GeneratedConfig } from '@/config/types';
+import type { Incident, MonitorGroup } from './monitor';
 
-export interface Config {
-  baseUrl: string;
+export interface Config extends GeneratedConfig {
   htmlEndpoint: string;
   apiEndpoint: string;
-  isPlaceholder: boolean;
 }
 
 export interface SiteConfig {
@@ -12,7 +11,7 @@ export interface SiteConfig {
   title: string;
   description: string;
   icon: string;
-  theme: "light" | "dark" | "system";
+  theme: 'light' | 'dark' | 'system';
   published: boolean;
   showTags: boolean;
   customCSS: string;

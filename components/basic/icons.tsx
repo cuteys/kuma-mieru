@@ -2,23 +2,6 @@ import type * as React from 'react';
 
 import type { IconSvgProps } from '@/types';
 
-export const Logo: React.FC<IconSvgProps> = ({ size = 28, width, height, ...props }) => (
-  <svg
-    width={size || width}
-    height={size || height}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <rect width="18" height="18" x="3" y="3" rx="2" />
-    <path d="M17 12h-2l-2 5-2-10-2 5H7" />
-  </svg>
-);
-
 export const DiscordIcon: React.FC<IconSvgProps> = ({ size = 24, width, height, ...props }) => {
   return (
     <svg height={size || height} viewBox="0 0 24 24" width={size || width} {...props}>

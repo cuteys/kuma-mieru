@@ -61,7 +61,7 @@ export const calculatePingMetrics = (heartbeats: Heartbeat[]): PingMetrics | nul
   const trimEnd = Math.ceil(sorted.length * 0.9);
   const trimmedPings = sorted.slice(trimStart, trimEnd);
   const trimmedAvgPing = Math.round(
-    trimmedPings.reduce((acc, curr) => acc + curr, 0) / trimmedPings.length
+    trimmedPings.reduce((acc, curr) => acc + curr, 0) / trimmedPings.length,
   );
 
   return {
@@ -69,4 +69,4 @@ export const calculatePingMetrics = (heartbeats: Heartbeat[]): PingMetrics | nul
     avgPing,
     trimmedAvgPing,
   };
-}; 
+};

@@ -6,9 +6,14 @@ Built with Next.js 15, TypeScript, and Recharts, this project enhances Uptime Ku
 [中文版](README.md) | [English Version](README.en.md)
 
 > [!NOTE]
-> This project has enabled automatic upstream repository synchronization. Your fork will auto-update daily at 1:30 AM UTC.
+> This project has enabled the automatic synchronization of the upstream repository function,
 >
-> To disable auto-sync: Create an empty `auto-update.lock` file in the root directory (please comment out `*.lock` in your .gitignore first).
+> you can manually enable the `Auto Update from Upstream` workflow in the `Actions` page of your forked repository.
+
+> [!WARNING]
+> New version (v1.1.4+) has refactored the time processing logic,
+>
+> please note to modify the `Display Timezone` (Display Timezone) to `UTC+0` time zone in the _Uptime Kuma_ settings.
 
 ## Key Features :sparkles:
 
@@ -30,7 +35,11 @@ Built with Next.js 15, TypeScript, and Recharts, this project enhances Uptime Ku
 
 #### 1. Fork Repository
 
-Fork this repository to your GitHub account.
+1. Click [Fork](https://github.com/Alice39s/kuma-mieru/fork) button to fork this repository to your GitHub account.
+2. Click `Create fork` button to create a new fork.
+
+> [!NOTE]
+> Please ensure your forked repository is public, otherwise you may encounter issues when synchronizing updates.
 
 #### 2. Import to Vercel
 
@@ -59,20 +68,31 @@ Go to https://vercel.com/new, select **Import** to import the repository you jus
 
 2. **Install Dependencies**
 
+   Kuma Mieru uses [Bun](https://bun.sh/) as its package manager, please install Bun first:
+
+   ```bash
+   # Linux/macOS
+   curl -fsSL https://bun.sh/install | bash
+   # Windows
+   powershell -c "irm bun.sh/install.ps1 | iex"
+   ```
+
+   Then install the dependencies:
+
    ```bash
    bun install
    ```
 
 3. **Configure Environment**  
-   Copy `.env.example` to `.env.local` and modify:
+   Copy `.env.example` to `.env` and modify:
 
    ```bash
    UPTIME_KUMA_BASE_URL=https://your-kuma-instance.com
    PAGE_ID=your_status_page_id
    ```
 
-   _Example: For URL `https://status.example.com/status/prod`, set:  
-   `UPTIME_KUMA_BASE_URL=https://status.example.com`  
+   _Example: For URL `https://status.kuma-mieru.invalid/status/prod`, set:  
+   `UPTIME_KUMA_BASE_URL=https://status.kuma-mieru.invalid`  
    `PAGE_ID=prod`_
 
 4. **Start Development Server**
@@ -89,7 +109,7 @@ Go to https://vercel.com/new, select **Import** to import the repository you jus
    bun run start
    ```
 
-## Docker Deployment :whale:
+## Docker Deployment :whale: (Beta)
 
 ### Using Docker Compose (Recommended)
 
@@ -110,7 +130,7 @@ Go to https://vercel.com/new, select **Import** to import the repository you jus
    Edit the `.env` file with required configurations:
 
    ```
-   UPTIME_KUMA_BASE_URL=https://example.com
+   UPTIME_KUMA_BASE_URL=https://example.kuma-mieru.invalid
    PAGE_ID=your-status-page-id
    ```
 
@@ -142,23 +162,33 @@ Go to https://vercel.com/new, select **Import** to import the repository you jus
    docker build -t kuma-mieru .
    ```
 
-2. **Run Container**
+2. **Modify Environment Variables**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Please refer to the [Environment Variables](#environment-variables) section for more details.
+
+3. **Run Container**
 
    ```bash
    docker run -d \
      --name kuma-mieru \
      -p 3883:3000 \
-     -e UPTIME_KUMA_BASE_URL=https://example.com \
+     -e UPTIME_KUMA_BASE_URL=https://example.kuma-mieru.invalid \
      -e PAGE_ID=your-status-page-id \
      kuma-mieru
    ```
 
 ### Environment Variables
 
-| Variable Name        | Required | Description                      | Example             |
-| -------------------- | -------- | -------------------------------- | ------------------- |
-| UPTIME_KUMA_BASE_URL | Yes      | Base URL of Uptime Kuma instance | https://example.com |
-| PAGE_ID              | Yes      | Status page ID                   | test1               |
+| Variable Name            | Required | Description                             | Example                            |
+| ------------------------ | -------- | --------------------------------------- | ---------------------------------- |
+| UPTIME_KUMA_BASE_URL     | Yes      | Base URL of Uptime Kuma instance        | https://example.kuma-mieru.invalid |
+| PAGE_ID                  | Yes      | Status page path of Uptime Kuma         | test1                              |
+| FEATURE_EDIT_THIS_PAGE   | No       | Whether to show "Edit This Page" button | true/false                         |
+| FEATURE_SHOW_STAR_BUTTON | No       | Whether to show "Star on Github" button | true/false                         |
 
 ### Health Check
 
@@ -190,27 +220,12 @@ Directly access the health check API:
 curl http://localhost:3883/api/health
 ```
 
-## Architecture :file_folder:
-
-Built with Next.js 15 (App Router):
-
-```
-kuma-mieru/
-├── app/                   # Next.js core
-│   ├── api/               # API routes
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Homepage
-├── components/            # Reusable UI components
-├── config/                # App configurations
-├── public/                # Static assets
-├── services/              # Data services
-├── styles/                # Global CSS
-├── types/                 # TypeScript types
-├── utils/                 # Helper functions
-└── ...                    # Config files
-```
-
 ## Integration with Uptime Kuma :link:
+
+> [!NOTE]
+> For the latest stable version of Uptime Kuma (v1.23.0+), Kuma Mieru has been fully tested and is compatible.
+>
+> If you are using an older version, please refer to the [Uptime Kuma official documentation](https://github.com/louislam/uptime-kuma/wiki/%F0%9F%86%99-How-to-Update) to try to upgrade to the latest stable version (v1.23.0+), and remember to back up your data.
 
 Seamlessly works with the popular self-hosted monitoring tool:  
 [Uptime Kuma](https://github.com/louislam/uptime-kuma)
@@ -218,8 +233,23 @@ Seamlessly works with the popular self-hosted monitoring tool:
 **Prerequisites**:
 
 1. A running Uptime Kuma instance
-2. Created status page in Uptime Kuma
-3. Correct environment variables configuration
+2. Change `Display Timezone` to any `UTC+0` time zone in the Uptime Kuma settings.
+3. Created status page in Uptime Kuma
+4. Correct environment variables configuration
+
+## FAQ :question:
+
+### Why is the time I see in Kuma Mieru offset from the time I see in Uptime Kuma?
+
+Since the time passed from the Uptime Kuma backend to the frontend **doesn't carry time zone information**, Kuma Mieru **automatically converts the time to the UTC+0 time zone** and displays it in order to facilitate development.
+
+If you find that the time zone is shifted, please go to Uptime Kuma settings and change `Display Timezone` to any `UTC+0` time zone.
+
+### Is Uptime Robot / Better Stack / other monitoring data sources compatible?
+
+Kuma Mieru was designed to address the shortcomings of Uptime Kuma, so v1 does not consider supporting other monitoring data sources for now.
+
+However, v2 may consider to support API interface of other monitoring tools such as Uptime Robot / Better Stack.
 
 ## Contribution Guide :handshake:
 

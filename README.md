@@ -5,9 +5,12 @@
 [中文版](README.md) | [English Version](README.en.md)
 
 > [!NOTE]
-> 本项目已启用自动同步上游仓库功能，Fork 后每天凌晨 1:30 (UTC) 会自动同步更新。
+> 本项目支持自动同步上游仓库功能，Fork 本仓库后可以自行前往 GitHub 仓库的 `Actions` 页面
 >
-> 如需禁用自动同步，请在项目根目录创建 `auto-update.lock` 空文件 (请先注释掉 .gitignore 中的 `*.lock` 哦)
+> 并找到 `Auto Update from Upstream` workflow 后手动 Enable 此工作流。
+
+> [!WARNING]
+> 新版 (v1.1.4+) 重构了时间处理逻辑，请注意修改 _Uptime Kuma_ 后台设置的 `Display Timezone` (显示时区) 为 `UTC+0` 时区。
 
 ## 功能亮点 :sparkles:
 
@@ -27,17 +30,15 @@
 
 ### 使用 Vercel 部署 (推荐)
 
-<!-- [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Falice39s%2Fkuma-mieru&env=UPTIME_KUMA_BASE_URL,PAGE_ID&demo-title=Kuma%20Mieru%20Demo&demo-description=Kuma%20Mieru%20is%20a%20third-party%20Uptime%20Kuma%20monitoring%20dashboard%20built%20on%20Next.js%2015%2C%20TypeScript%20and%20Recharts.&demo-url=https%3A%2F%2Fkuma-mieru.vercel.app%2F%3Fr%3Dvercel_new&demo-image=https%3A%2F%2Fraw.githubusercontent.com%2FAlice39s%2Fkuma-mieru%2Frefs%2Fheads%2Fmain%2Fdocs%2Fv1.0.0-light.png)
-
-- 点击按钮后，需要填写 `UPTIME_KUMA_BASE_URL` 和 `PAGE_ID` 两个环境变量
-- 最后点击 `Deploy` 按钮即可一键部署到 Vercel。 -->
-
 #### 1. Fork 仓库
 
 Fork 本仓库到您的 GitHub 用户下，如图所示：
 
-1. ![Fork 仓库](./docs/git-repo-fork.png)
-2. ![Fork 成功](./docs/git-create-fork.png)
+1. 在这里 [Fork](https://github.com/Alice39s/kuma-mieru/fork) 本仓库
+2. 点击 `Create fork` 按钮
+
+> [!NOTE]
+> 请确保您 Fork 的仓库是公开的，否则后续可能无法快速同步本仓库的更新。
 
 #### 2. 导入到 Vercel
 
@@ -71,31 +72,29 @@ Fork 本仓库到您的 GitHub 用户下，如图所示：
 
 2. **安装依赖**
 
+   Kuma Mieru 使用 [Bun](https://bun.sh/) 作为包管理器，您需要先安装 Bun：
+
+   ```bash
+   # Linux/macOS
+   curl -fsSL https://bun.sh/install | bash
+   # Windows
+   powershell -c "irm bun.sh/install.ps1 | iex"
+   ```
+
+   然后再安装依赖包：
+
    ```bash
    bun install
    ```
 
 3. **配置环境变量**
-   复制 `.env.example` 文件并创建 `.env.local` 文件，然后根据您的 Uptime Kuma 实例配置以下环境变量：
+   复制 `.env.example` 文件为 `.env`：
 
    ```bash
-   cp .env.example .env.local
+   cp .env.example .env
    ```
 
-   `.env.local` 文件中 **必填** 的环境变量：
-
-   ```
-   UPTIME_KUMA_BASE_URL=https://example.com
-   PAGE_ID=your-status-page-id
-   ```
-
-   举个例子，如果您的 Uptime Kuma 公开状态页面的 URL 为
-   `https://example.com/status/test1`
-
-   那么您需要这么配置：
-
-   - `UPTIME_KUMA_BASE_URL` 设置为 `https://example.com`
-   - `PAGE_ID` 设置为 `test1`
+   `.env` 文件中 **必填** 的环境变量，可参考 [环境变量配置](#环境变量配置) 章节。
 
 4. **启动开发服务器**
 
@@ -113,7 +112,7 @@ Fork 本仓库到您的 GitHub 用户下，如图所示：
    bun run start
    ```
 
-## Docker 部署 :whale:
+## Docker 部署 :whale: (Beta)
 
 ### 使用 Docker Compose（推荐）
 
@@ -131,12 +130,7 @@ Fork 本仓库到您的 GitHub 用户下，如图所示：
    cp .env.example .env
    ```
 
-   编辑 `.env` 文件，设置必要的环境变量：
-
-   ```
-   UPTIME_KUMA_BASE_URL=https://example.com
-   PAGE_ID=your-status-page-id
-   ```
+   参考 [环境变量配置](#环境变量配置) 章节，配置必要的环境变量。
 
 3. **启动服务**
 
@@ -144,7 +138,8 @@ Fork 本仓库到您的 GitHub 用户下，如图所示：
    docker compose up -d
    ```
 
-   如果需要绕过 build 缓存，可以添加 `--build` 参数：
+   > [!NOTE]
+   > 如果需要更新镜像，可以添加 `--build` 参数：
 
    ```bash
    docker compose up -d --build
@@ -158,94 +153,77 @@ Fork 本仓库到您的 GitHub 用户下，如图所示：
    docker compose logs -f
    ```
 
-### 使用 Docker 手动部署
+### Docker Run 部署
 
-1. **构建镜像**
+#### 1. 获取容器镜像
 
-   ```bash
-   docker build -t kuma-mieru .
-   ```
-
-2. **运行容器**
-
-   ```bash
-   docker run -d \
-     --name kuma-mieru \
-     -p 3883:3000 \
-     -e UPTIME_KUMA_BASE_URL=https://example.com \
-     -e PAGE_ID=your-status-page-id \
-     kuma-mieru
-   ```
-
-### 环境变量说明
-
-| 变量名               | 必填 | 说明                       | 示例                |
-| -------------------- | ---- | -------------------------- | ------------------- |
-| UPTIME_KUMA_BASE_URL | 是   | Uptime Kuma 实例的基础 URL | https://example.com |
-| PAGE_ID              | 是   | 状态页面 ID                | test1               |
-
-### 健康检查
-
-Docker 容器包含了内置的健康检查机制，每 30 秒会检查一次服务状态。健康检查 API 端点为 `/api/health`，返回以下信息：
-
-```json
-{
-  "status": "ok",
-  "timestamp": "2024-03-20T12:34:56.789Z",
-  "uptime": 123.456
-}
-```
-
-您可以通过以下命令查看容器的健康状态：
+**从源码构建镜像**
 
 ```bash
-docker ps
+docker build -t kuma-mieru .
 ```
 
-或者使用 Docker Compose：
+#### 2. 修改环境变量
+
+复制 `.env.example` 文件并创建 `.env` 文件：
 
 ```bash
-docker compose ps
+cp .env.example .env
 ```
 
-您也可以直接访问健康检查 API：
+请参考 [环境变量配置](#环境变量配置) 章节，修改 `.env` 文件中的 `UPTIME_KUMA_BASE_URL` 和 `PAGE_ID` 变量。
+
+#### 3. 启动容器服务
+
+**使用源码构建镜像**
 
 ```bash
-curl http://localhost:3883/api/health
+docker run -d \
+  --name kuma-mieru \
+  -p 3883:3000 \
+  -e UPTIME_KUMA_BASE_URL="..." \
+  -e PAGE_ID="..." \
+  kuma-mieru
 ```
 
-## 项目结构 :file_folder:
+## 环境变量配置
 
-Kuma Mieru 使用 Next.js 15 (App Router) 构建，具体的项目结构如下：
+假如您的 Uptime Kuma 的状态页面 URL 为 `https://example.kuma-mieru.invalid/status/test1`，那么您需要配置的环境变量如下：
 
-```
-kuma-mieru/
-├── app/                   # Next.js 应用目录
-│   ├── api/               # API 路由
-│   ├── layout.tsx         # 主布局
-│   └── page.tsx           # 主页
-├── components/            # React 组件
-│   ├── ...
-├── config/                # 配置文件
-│   ├── ...
-├── public/                # 静态文件
-├── services/              # 服务组件
-├── styles/                # 全局样式
-├── types/                 # TypeScript 类型定义
-├── utils/                 # 工具函数
-├── tailwind.config.js     # Tailwind CSS 配置
-├── next.config.js         # Next.js 配置
-├── .env.example           # 配置文件示例
-├── ...
-```
+| 变量名                   | 必填 | 说明                           | 示例/可选值                        |
+| ------------------------ | ---- | ------------------------------ | ---------------------------------- |
+| UPTIME_KUMA_BASE_URL     | 是   | Uptime Kuma 实例的基础 URL     | https://example.kuma-mieru.invalid |
+| PAGE_ID                  | 是   | Uptime Kuma 实例的状态页面 ID  | test1                              |
+| FEATURE_EDIT_THIS_PAGE   | 否   | 是否展示 “编辑此页面” 按钮     | true/false                         |
+| FEATURE_SHOW_STAR_BUTTON | 否   | 是否展示 “Star on Github” 按钮 | true/false                         |
 
 ## 与 Uptime Kuma 集成 :link:
 
+> [!NOTE]
+> 经测试，本项目兼容 Uptime Kuma 的最新稳定版本 (v1.23.0+)
+>
+> 如您使用的版本较低，请参考 [Uptime Kuma 官方文档](https://github.com/louislam/uptime-kuma/wiki/%F0%9F%86%99-How-to-Update) 尝试升级到最新稳定版 (v1.23.0+)，注意备份好数据。
+
 Kuma Mieru 与备受好评的开源监控工具 [Uptime Kuma](https://github.com/louislam/uptime-kuma) 无缝集成，您只需要：
 
-1. **安装并配置 Uptime Kuma**
-2. **在 Uptime Kuma 中创建 "状态页面"**
-3. **在 `.env.local` 文件中配置环境变量**
+1. 安装并配置 Uptime Kuma
+2. 在 Uptime Kuma 设置中修改 `Display Timezone` (显示时区) 为任意 `UTC+0` 时区
+3. 在 Uptime Kuma 中创建 "状态页面"
+4. 在 `.env` 文件中配置环境变量
+
+## FAQ :question:
+
+### 为什么我在 Kuma Mieru 中看到的时间与 Uptime Kuma 中有偏移？
+
+由于 Uptime Kuma 后端传递到前端的时间 **没有携带时区信息**，为了方便开发，Kuma Mieru 会 **自动将时间转换为 UTC+0 时区** 并显示。
+
+如果您发现时区偏移，请前往 Uptime Kuma 设置中修改 `Display Timezone` (显示时区) 为任意 `UTC+0` 时区。
+
+### 请问兼容 Uptime Robot / Better Stack / 其他监控数据源吗？
+
+Kuma Mieru 设计之初就是为了解决 Uptime Kuma 的不足，所以 v1 暂时不考虑支持其他监控数据源。
+
+不过 v2 版本可能会考虑支持 Uptime Robot / Better Stack 等其他监控工具的 API 接口。
 
 ## 贡献指南 :handshake:
 
