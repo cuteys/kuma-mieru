@@ -2,6 +2,13 @@
   "name": "kuma-mieru",
   "description": "A 3rd-party Uptime Kuma monitoring dashboard built on Next.js 15, TypeScript and Recharts.",
   "version": "1.1.6",
+  "author": "Alice39s",
+  "license": "MPL-2.0",
+  "homepage": "https://github.com/Alice39s/kuma-mieru",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Alice39s/kuma-mieru.git"
+  },
   "private": true,
   "scripts": {
     "dev": "bun run linter && next dev --turbopack --port 3881",

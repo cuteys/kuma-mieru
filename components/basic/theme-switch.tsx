@@ -34,7 +34,7 @@ export const ThemeSwitch = ({
   useEffect(() => {
     setMounted(true);
   }, []);
-  
+
   const currentTheme = (theme as keyof typeof mode) || 'system';
   const themeIcon = mode[currentTheme]?.icon || mode.system.icon;
 

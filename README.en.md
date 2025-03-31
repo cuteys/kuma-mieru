@@ -5,11 +5,6 @@ Built with Next.js 15, TypeScript, and Recharts, this project enhances Uptime Ku
 
 [中文版](README.md) | [English Version](README.en.md)
 
-> [!NOTE]
-> This project has enabled the automatic synchronization of the upstream repository function,
->
-> you can manually enable the `Auto Update from Upstream` workflow in the `Actions` page of your forked repository.
-
 > [!WARNING]
 > New version (v1.1.4+) has refactored the time processing logic,
 >
@@ -255,6 +250,16 @@ However, v2 may consider to support API interface of other monitoring tools such
 
 We welcome contributions! Please review:  
 [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
+
+## Star History :star2:
+
+<a href="https://github.com/Alice39s/kuma-mieru/stargazers" target="_blank" style="display: block" align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Alice39s/kuma-mieru&type=Timeline&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Alice39s/kuma-mieru&type=Timeline" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Alice39s/kuma-mieru&type=Timeline" />
+  </picture>
+</a>
 
 ## License :lock:
 

@@ -16,10 +16,10 @@ import clsx from 'clsx';
 import Image from 'next/image';
 import NextLink from 'next/link';
 
-import { apiConfig } from '@/config/api';
 import { GithubIcon, SearchIcon } from '@/components/basic/icons';
 import { ThemeSwitch } from '@/components/basic/theme-switch';
 import { NavbarSkeleton } from '@/components/ui/CommonSkeleton';
+import { apiConfig } from '@/config/api';
 import { siteConfig } from '@/config/site';
 import type { Config } from '@/types/config';
 import { motion } from 'framer-motion';

@@ -2,8 +2,8 @@
 
 import { cn } from '@heroui/react';
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 import { Pause, Play, RefreshCw } from 'lucide-react';
 import { useFormatter, useTranslations } from 'next-intl';
 import { type ReactNode, useCallback, useEffect, useState } from 'react';

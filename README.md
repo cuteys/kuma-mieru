@@ -4,11 +4,6 @@
 
 [中文版](README.md) | [English Version](README.en.md)
 
-> [!NOTE]
-> 本项目支持自动同步上游仓库功能，Fork 本仓库后可以自行前往 GitHub 仓库的 `Actions` 页面
->
-> 并找到 `Auto Update from Upstream` workflow 后手动 Enable 此工作流。
-
 > [!WARNING]
 > 新版 (v1.1.4+) 重构了时间处理逻辑，请注意修改 _Uptime Kuma_ 后台设置的 `Display Timezone` (显示时区) 为 `UTC+0` 时区。
 
@@ -230,6 +225,16 @@ Kuma Mieru 设计之初就是为了解决 Uptime Kuma 的不足，所以 v1 暂�
 非常欢迎您为 Kuma Mieru 项目作出贡献！
 
 如果您有任何想法或建议，请参阅 [CONTRIBUTING.md](CONTRIBUTING.md) 了解详细的贡献方式。
+
+## Star History :star2:
+
+<a href="https://github.com/Alice39s/kuma-mieru/stargazers" target="_blank" style="display: block" align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Alice39s/kuma-mieru&type=Timeline&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Alice39s/kuma-mieru&type=Timeline" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Alice39s/kuma-mieru&type=Timeline" />
+  </picture>
+</a>
 
 ## 开源许可 :lock:
 

@@ -97,6 +97,19 @@ export default function MonitorDetail({
     fetchData();
   }, [fetchData]);
 
+  const handleBack = () => {
+    try {
+      router.back();
+      setTimeout(() => {
+        if (window.location.pathname === `/monitor/${resolvedParams.id}`) {
+          router.push('/');
+        }
+      }, 500);
+    } catch {
+      router.push('/');
+    }
+  };
+
   if (isLoading) {
     return (
       <motion.div initial="initial" animate="animate" exit="exit" variants={pageVariants}>
@@ -129,7 +142,7 @@ export default function MonitorDetail({
         <p className="text-xl text-gray-500">{error || t('errorMonitorNotFound')}</p>
         <button
           type="button"
-          onClick={() => router.back()}
+          onClick={handleBack}
           className="px-4 py-2 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors"
         >
           {t('pageBack')}
@@ -151,7 +164,7 @@ export default function MonitorDetail({
             >
               <button
                 type="button"
-                onClick={() => router.back()}
+                onClick={handleBack}
                 className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
               >
                 ← {t('pageBackMonitor')}

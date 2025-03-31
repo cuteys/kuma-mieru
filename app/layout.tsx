@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   icons: {
     icon: siteConfig.icon,
   },
-  generator: `Kuma-Mieru/${packageJson.version}`,
+  generator: `https://github.com/Alice39s/kuma-mieru v${packageJson.version}`,
   formatDetection: {
     email: false,
     address: false,

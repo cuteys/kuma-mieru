@@ -1,5 +1,11 @@
 'use client';
 
+/**
+ * Copyright (c) 2025-present, Source: https://github.com/Alice39s/kuma-mieru
+ * Under the MPL-2.0 License, see ../LICENSE for more details.
+ * PLEASE DO NOT REMOVE THIS HEADER.
+ */
+
 import type { ThemeProviderProps } from 'next-themes';
 
 import { HeroUIProvider } from '@heroui/system';
